@@ -147,12 +147,17 @@ Dentro da pasta `frontend`, siga as instruções:
 
 2. Crie o arquivo de variáveis de ambiente:
 ```bash
-    cp .env.local.example .env.local
+   touch .env.local
 ```
 
 3. Configure a URL da API no `.env.local`:
 ```env
     NEXT_PUBLIC_API_URL=http://localhost:8000
+    NEXT_PUBLIC_API_DOMAIN=localhost
+    AUTH_TRUST_HOST=http://localhost:3000
+    AUTH_SECRET=BXAaIiPMhpUsEe7osMsaB5Fhg5k5SLuEjW8Ri/hmWSc=
+    NEXT_PUBLIC_WHATSAPP_URL=https://wa.me
+    NEXT_PUBLIC_DISABLE_INSCRIPTIONS=false
 ```
 
 4. Inicie o servidor:
