@@ -27,7 +27,7 @@ class NewsController extends Controller
                 $query->where('title', 'like', '%' . $request->title . '%');
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(9);
 
         return response()->json($news, Response::HTTP_OK);
     }
@@ -48,7 +48,9 @@ class NewsController extends Controller
 
     public function show(string $id): JsonResponse
     {
-        $news = $this->news->findOrFail($id);
+        $news = $this->news->where('uuid', $id)
+            ->orWhere('slug', $id)
+            ->firstOrFail();
 
         return response()->json($news, Response::HTTP_OK);
     }
