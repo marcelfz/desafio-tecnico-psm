@@ -9,6 +9,7 @@ interface RichTextEditorProps {
 
 export default function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -42,8 +43,36 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
     execCommand('formatBlock', tag);
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64Url = e.target?.result as string;
+      if (base64Url) {
+        execCommand('insertImage', base64Url);
+      }
+    };
+    reader.readAsDataURL(file);
+
+    event.target.value = '';
+  };
+
+  const triggerImageUpload = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className="border border-stone-300 rounded-lg overflow-hidden bg-white">
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        className="hidden"
+      />
+
       {/* Toolbar */}
       <div className="flex items-center gap-1 border-b border-stone-200 px-2 py-2 flex-wrap">
         <ToolbarButton
@@ -112,6 +141,32 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
 
         <div className="w-px h-5 bg-stone-200 mx-1" />
 
+        <ToolbarButton
+          active={false}
+          onClick={() => execCommand('outdent')}
+          label="Diminuir recuo"
+        >
+          ⇤
+        </ToolbarButton>
+
+        <ToolbarButton
+          active={false}
+          onClick={() => execCommand('indent')}
+          label="Aumentar recuo"
+        >
+          ⇥
+        </ToolbarButton>
+
+        <ToolbarButton
+          active={false}
+          onClick={triggerImageUpload}
+          label="Fazer Upload de Imagem"
+        >
+          📁🖼️
+        </ToolbarButton>
+
+        <div className="w-px h-5 bg-stone-200 mx-1" />
+
         <ToolbarButton active={false} onClick={() => execCommand('undo')} label="Desfazer">
           ↶
         </ToolbarButton>
@@ -125,7 +180,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
         ref={editorRef}
         contentEditable
         onInput={handleInput}
-        className="prose prose-stone max-w-none min-h-[300px] px-4 py-3 focus:outline-none [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-3 [&_h3]:mb-2 [&_blockquote]:border-l-4 [&_blockquote]:border-stone-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-stone-600 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 text-gray-900"
+        className="prose prose-stone max-w-none min-h-[300px] px-4 py-3 focus:outline-none [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-3 [&_h3]:mb-2 [&_blockquote]:border-l-4 [&_blockquote]:border-stone-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-stone-600 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_img]:max-w-full [&_img]:h-auto text-gray-900"
         suppressContentEditableWarning
       />
     </div>
